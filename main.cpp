@@ -3,52 +3,30 @@
 #include <cstdlib>
 #include <windows.h>
 #include <ctime>
-
-/*
-    This part was copied from
-    http://www.cplusplus.com/forum/beginner/4234/
-*/
 #include <stdio.h>
 #include <conio.h>
-void gotoxy( int column, int line )
-{
-    COORD coord;
-    coord.X = column;
-    coord.Y = line;
-    SetConsoleCursorPosition(
-        GetStdHandle( STD_OUTPUT_HANDLE ),
-        coord
-    );
-}
-
-int wherex()
-{
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    COORD                      result;
-    if (!GetConsoleScreenBufferInfo(
-         GetStdHandle( STD_OUTPUT_HANDLE ),
-         &csbi
-         ))
-    return -1;
-    return result.X;
-}
-
-int wherey()
-{
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    COORD                      result;
-    if (!GetConsoleScreenBufferInfo(
-         GetStdHandle( STD_OUTPUT_HANDLE ),
-         &csbi
-         ))
-    return -1;
-    return result.Y;
-}
-
 #define UP          0
 #define RIGHT       1
 #define DOWN        2
 #define LEFT        3
+
+
+namespace console{
+    void gotoxy( int column, int line )
+    {
+        COORD coord;
+        coord.X = column;
+        coord.Y = line;
+        SetConsoleCursorPosition(
+            GetStdHandle( STD_OUTPUT_HANDLE ),
+            coord
+        );
+    }
+    void cls(){
+        system("cls");
+    }
+}
+
 
 using namespace std;
 class position{
@@ -131,7 +109,7 @@ public:
             }
             field += "\n";
         }
-        gotoxy(0,0);
+        console::gotoxy(0,0);
         cout << field;
     }
     void step(){
@@ -172,13 +150,13 @@ public:
                 Sleep(2000);
                 for(int i = 0; i <= 20; i++){
                     this->printField(true);
-                    gotoxy(0,0);
+                    console::gotoxy(0,0);
                     Sleep(100);
                     this->printField(false);
-                    gotoxy(0,0);
+                    console::gotoxy(0,0);
                     Sleep(100);
                 }
-                this->cls();
+                console::cls();
                 cout << "Game Over.\n  Score: " << this->score() << endl;
                 Sleep(2000);
                 this->go = true;
@@ -249,9 +227,6 @@ public:
     }
     bool gameOver(){
         return this->go;
-    }
-    void cls(){
-        system("cls");
     }
 
 };
