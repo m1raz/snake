@@ -16,7 +16,12 @@
 #define H_SCORE     102
 #define EXIT        103
 
+#define SNAKE_MASK  "o.x. "
+
 using namespace std;
+
+
+/* All console functions here */
 namespace console{
     void gotoxy( int column, int line )
     {
@@ -33,6 +38,8 @@ namespace console{
     }
 }
 
+
+/*single item of menu*/
 struct menu_item{
     int id;
     string item_txt;
@@ -151,9 +158,10 @@ public:
     void showHighScore(){
         vector<score> s;
         string line;
-        ifstream myfile ("score");
-        if (myfile.is_open()){
-            while ( getline (myfile,line) ){
+        ifstream scorei("score");
+        if (scorei.is_open()){
+            int countLines = 0;
+            while ( getline (scorei,line) ){
                 string name = "";
                 string scr = "";
                 int pos = 0;
@@ -170,44 +178,78 @@ public:
                     }
                 }
                 s.push_back(score(stoi(scr), name));
+                countLines++;
             }
-            myfile.close();
-            for(int i = 0; i < s.size(); i++){
-                for(int n = 0; n < s.size(); n++){
-                    if(s[n].value < s[n+1].value){
-                        score temp(s[n].value, s[n].owner);
-                        s[n] = s[n+1];
-                        s[n+1] = temp;
+            scorei.close();
+            string hs = "";
+            if(countLines > 0){
+                for(int i = 0; i < s.size(); i++){
+                    for(int n = 0; n < s.size(); n++){
+                        if(s[n].value < s[n+1].value){
+                            score temp(s[n].value, s[n].owner);
+                            s[n] = s[n+1];
+                            s[n+1] = temp;
+                        }
                     }
                 }
-            }
-            string hs = "High Score\n==========\n";
-            int blo = 0;
-            for(int i = 0; i <= s.size() - 1; i++){
-                if(s[i].owner.size() > blo)
-                    blo = s[i].owner.size();
-            }
-            int blv = 0;
-            for(int i = 0; i <= s.size() - 1; i++){
-                if(s[i].show().size() > blv)
-                    blv = s[i].show().size();
-            }
-            for(int i = 0; i <= s.size() - 1; i++){
-                hs += s[i].owner;
-                for(int n = 0; n < blo - s[i].owner.size(); n++){
-                    hs += '.';
+                int blo = 0;
+                for(int i = 0; i <= s.size() - 1; i++){
+                    if(s[i].owner.size() > blo)
+                        blo = s[i].owner.size();
                 }
-                hs += ".............";
-                for(int n = 0; n < blv - s[i].show().size(); n++){
-                    hs += '.';
+                int blv = 0;
+                for(int i = 0; i <= s.size() - 1; i++){
+                    if(s[i].show().size() > blv)
+                        blv = s[i].show().size();
                 }
-                hs += s[i].show() + '\n';
+                for(int i = 0; i <= s.size() - 1; i++){
+                    hs += s[i].owner;
+                    for(int n = 0; n < blo - s[i].owner.size(); n++){
+                        hs += '.';
+                    }
+                    hs += ".............";
+                    for(int n = 0; n < blv - s[i].show().size(); n++){
+                        hs += '.';
+                    }
+                    hs += s[i].show() + '\n';
+                }
             }
+
+            hs = "High Score\n==========\n" + hs;
             console::cls();
             cout << hs;
             while(true){
                 if(GetAsyncKeyState(VK_SPACE) < 0){
                     Sleep(150);
+                    break;
+                }
+                if(GetAsyncKeyState(VK_OEM_3) < 0){
+                    bool consoleExist = true;
+                    while(consoleExist){
+                        string action = "";
+                        bool actionDone = false;
+                        vector<string> a_delete = {"delete", "destroy", "reset", "d", "remove", "clear"};
+                        vector<string> a_nothing = {"nothing", "bye", "exit"};
+                        cout << "What do you want to do?" << endl;
+                        cin >> action;
+                        for(int i = 0; i < a_delete.size(); i++){
+                            if(action == a_delete[i]){
+                                cout << "Are you sure? (yes/no)" << endl;
+                                cin >> action;
+                                if(action == "yes"){
+                                    score temp;
+                                    temp.removeScore();
+                                }
+                            }
+                        }
+                        if(actionDone == false){
+                            for(int i = 0; i < a_nothing.size(); i++){
+                                if(action == a_nothing[i]){
+                                    consoleExist = false;
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
             }
@@ -219,6 +261,12 @@ public:
     void operator=(const score& s){
         this->value = s.value;
         this->owner = s.owner;
+    }
+    void removeScore(){
+        ofstream scoreo;
+        scoreo.open("score");
+        scoreo << "";
+        scoreo.close();
     }
 };
 
@@ -277,33 +325,47 @@ public:
     }
     ~game(){
     }
-    void printField( bool snakeVisible ){
+    void printField( bool snakeVisible, string sprite ){
+        /*
+            sprite:
+                0 - snake head
+                1 - snake body
+                2 - snake dead
+                3 - food
+                4 - background
+        */
+        #define SNAKE_HEAD  sprite[0]
+        #define SNAKE_BODY  sprite[1]
+        #define SNAKE_DEAD  sprite[2]
+        #define FOOD        sprite[3]
+        #define BACKGROUND  sprite[4]
+
         string field = "TIME:" + this->spentTime() + " SCORE:" + this->score.show() + "\n";
         for(int i = 0; i < this->y; i++){
             for(int n = 0; n < this->x; n++){
                 position p(n,i);
                 bool found = false;
                 if(p == this->food){
-                    field += ".";
+                    field += FOOD;
                     found = true;
                 }
                 for(int k = 0; k < this->snake.size(); k++){
                     if(p == snake[k]){
                         if(found)
-                            field[field.size() - 1] = '.';
+                            field[field.size() - 1] = SNAKE_BODY;
                         else
-                            field += ".";
+                            field += SNAKE_BODY;
                         bool isHead = false;
                         if(this->snake[0].x == n && this->snake[0].y == i){
-                            field[field.size() - 1] = 'o';
+                            field[field.size() - 1] = SNAKE_HEAD;
                         }
                         if(!snakeVisible)
-                            field[field.size() - 1] = 'x';
+                            field[field.size() - 1] = SNAKE_DEAD;
                         found = true;
                     }
                 }
                 if(found == false)
-                    field += " ";
+                    field += BACKGROUND;
             }
             field += "\n";
         }
@@ -347,10 +409,10 @@ public:
             if(snake[0] == snake[i]){
                 Sleep(2000);
                 for(int i = 0; i <= 20; i++){
-                    this->printField(true);
+                    this->printField(true, SNAKE_MASK);
                     console::gotoxy(0,0);
                     Sleep(100);
-                    this->printField(false);
+                    this->printField(false, SNAKE_MASK);
                     console::gotoxy(0,0);
                     Sleep(100);
                 }
@@ -426,7 +488,6 @@ public:
     bool gameOver(){
         return this->go;
     }
-
 };
 int main()
 {
@@ -439,7 +500,7 @@ int main()
                     game g(30,20);
                     while(true){
                         g.step();
-                        g.printField(true);
+                        g.printField(true, SNAKE_MASK);
                         if(g.gameOver())
                             break;
                     }
@@ -460,7 +521,6 @@ int main()
             }
         }
         m.printMenu();
-
     }
     return 0;
 }
