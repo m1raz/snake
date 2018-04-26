@@ -4,7 +4,7 @@ I have nothing to do. So I made an ASCII snake. =_="
 
 # compile
 
-Use g++. I used Code::Blocks 17.12 build in MinGW.
+Use g++. I used Code::Blocks 17.12 built in MinGW.
 
 `g++ -Wall -fexceptions -g -std=c++11 -Ixlnt/include -lxlnt -c main.cpp -o snake.exe`
 
