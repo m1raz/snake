@@ -10,12 +10,18 @@ Use g++. I used Code::Blocks 17.12 build in MinGW.
 
 # play
 
-| Key         | Action        | 
-|------------ |:-------------:| 
-| UP          | move up       |
-| DOWN        | move down     |
-| LEFT        | move left     |
-| RIGHT       | move right    |
-| SPACEBAR    | add speed     |
+| Key         | Action                          | 
+|------------ |:-------------------------------:| 
+| UP          | move up                         |
+| DOWN        | move down                       |
+| LEFT        | move left                       |
+| RIGHT       | move right                      |
+| SPACEBAR    | Select option and add speed     |
 
-That's all.
+# versions
+v1.0 -> well I made a game :D
+v1.1 -> Snake head now is 'o' sign and body elem have '.' sign. I think looks cool. :3
+	Background is black. Becouse '+' helps to orientate, but my eyes are so tired.
+	Menu and High Scores is added.
+
+That's all, folks.
