@@ -21,7 +21,9 @@ Use g++. I used Code::Blocks 17.12 built in MinGW.
 High Score console can be activated py pressing ~
 
 Commands:
+
 clear : delete all scores
+
 exit  : return to menu
 
 # versions
