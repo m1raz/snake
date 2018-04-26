@@ -19,9 +19,12 @@ Use g++. I used Code::Blocks 17.12 build in MinGW.
 | SPACEBAR    | Select option and add speed     |
 
 # versions
-v1.0 -> well I made a game :D
-v1.1 -> Snake head now is 'o' sign and body elem have '.' sign. I think looks cool. :3
-	Background is black. Becouse '+' helps to orientate, but my eyes are so tired.
-	Menu and High Scores is added.
+v1.0 -> 
+* well I made a game :D
+
+1.1 -> 
+* Snake head now is 'o' sign and body elem have '.' sign. Looks better. :3
+* Background is black. Becouse '+' helps to orientate, but my eyes are so tired.
+* Menu and High Scores is added.
 
 That's all, folks.
